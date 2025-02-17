@@ -7,13 +7,18 @@ if (!apiUrl) {
 
 const todoUrl = apiUrl + "/todos";
 
+const getAuthToken = () => {
+  return localStorage.getItem("token");
+};
+
 export const fetchTodos = async () => {
+  const token = getAuthToken();
   const response = await fetch(todoUrl, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
   });
   if (!response.ok) {
     throw new Error("Failed to fetch todos");
@@ -22,12 +27,13 @@ export const fetchTodos = async () => {
 };
 
 export const createTodo = async (todoRequest: TodoRequest) => {
+  const token = getAuthToken();
   const response = await fetch(todoUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify(todoRequest),
   });
   if (!response.ok) {
@@ -37,12 +43,13 @@ export const createTodo = async (todoRequest: TodoRequest) => {
 };
 
 export const updateTodo = async (id: number, todoRequest: TodoRequest) => {
+  const token = getAuthToken();
   const response = await fetch(`${todoUrl}/${id}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
     body: JSON.stringify(todoRequest),
   });
   if (!response.ok) {
@@ -52,12 +59,13 @@ export const updateTodo = async (id: number, todoRequest: TodoRequest) => {
 };
 
 export const deleteTodo = async (id: number) => {
+  const token = getAuthToken();
   const response = await fetch(`${todoUrl}/${id}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`,
     },
-    credentials: "include",
   });
   if (!response.ok) {
     throw new Error("Failed to delete todo");

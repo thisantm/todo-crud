@@ -1,8 +1,6 @@
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
 import { authApiCall } from "../../utils/auth-api";
-import { useState } from "react";
-import { FaSpinner } from "react-icons/fa";
 
 interface AuthDialogProps {
   onClose: (success: boolean, isCancel?: boolean) => void;
@@ -15,10 +13,7 @@ const validationSchema = Yup.object({
 });
 
 export default function AuthDialog({ onClose, mode }: AuthDialogProps) {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleSubmit = async (values: { email: string; password: string }) => {
-    setIsLoading(true);
+  const handleSubmit = async (values: { email: string; password: string }, { setSubmitting }: { setSubmitting: (isSubmitting: boolean) => void }) => {
     try {
       const result = await authApiCall(mode, values);
       console.log("Success:", result);
@@ -27,7 +22,7 @@ export default function AuthDialog({ onClose, mode }: AuthDialogProps) {
       console.error("Error:", error);
       onClose(false);
     } finally {
-      setIsLoading(false);
+      setSubmitting(false);
     }
   };
 
@@ -40,40 +35,43 @@ export default function AuthDialog({ onClose, mode }: AuthDialogProps) {
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
         >
-          <Form className="flex flex-col gap-4">
-            <div>
-              <label htmlFor="email" className="block text-black">Email</label>
-              <Field
-                type="email"
-                id="email"
-                name="email"
-                className="border border-gray-300 p-2 rounded w-full text-black"
-              />
-              <ErrorMessage name="email" component="div" className="text-red-500" />
-            </div>
-            <div>
-              <label htmlFor="password" className="block text-black">Password</label>
-              <Field
-                type="password"
-                id="password"
-                name="password"
-                className="border border-gray-300 p-2 rounded w-full text-black"
-              />
-              <ErrorMessage name="password" component="div" className="text-red-500" />
-            </div>
-            <div className="flex gap-4">
-              <button type="submit" className="bg-black text-white py-2 px-4 rounded" disabled={isLoading}>
-                {isLoading ? <FaSpinner className="animate-spin" /> : mode === "login" ? "Login" : "Register"}
-              </button>
-              <button
-                type="button"
-                className="bg-gray-500 text-white py-2 px-4 rounded"
-                onClick={() => onClose(false, true)}
-              >
-                Cancel
-              </button>
-            </div>
-          </Form>
+          {({ isSubmitting }) => (
+            <Form className="flex flex-col gap-4">
+              <div>
+                <label htmlFor="email" className="block text-black">Email</label>
+                <Field
+                  type="email"
+                  id="email"
+                  name="email"
+                  className="border border-gray-300 p-2 rounded w-full text-black"
+                />
+                <ErrorMessage name="email" component="div" className="text-red-500" />
+              </div>
+              <div>
+                <label htmlFor="password" className="block text-black">Password</label>
+                <Field
+                  type="password"
+                  id="password"
+                  name="password"
+                  className="border border-gray-300 p-2 rounded w-full text-black"
+                />
+                <ErrorMessage name="password" component="div" className="text-red-500" />
+              </div>
+              <div className="flex gap-4">
+                <button type="submit" className="bg-black text-white py-2 px-4 rounded" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : mode === "login" ? "Login" : "Register"}
+                </button>
+                <button
+                  type="button"
+                  className="bg-gray-500 text-white py-2 px-4 rounded"
+                  onClick={() => onClose(false, true)}
+                  disabled={isSubmitting}
+                >
+                  Cancel
+                </button>
+              </div>
+            </Form>
+          )}
         </Formik>
       </div>
     </div>
