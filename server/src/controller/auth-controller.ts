@@ -5,8 +5,13 @@ import { comparePasswordAndHash, generateToken, hashPassword } from '../auth'
 
 const usersService = new UsersService()
 
+function isValidEmail(email: string): boolean {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  return emailRegex.test(email)
+}
+
 function isValidUserRequest(body: any): body is { email: string; password: string } {
-  return body && typeof body.email === 'string' && typeof body.password === 'string'
+  return body && typeof body.email === 'string' && isValidEmail(body.email) && typeof body.password === 'string'
 }
 
 export default class AuthController {

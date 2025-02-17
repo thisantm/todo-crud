@@ -7,7 +7,7 @@ import { InvalidAuthorizationHeaderError, InvalidTokenError } from '../auth/erro
 const todoService = new TodosService()
 
 function isValidTodoRequest(body: any): body is TodoRequest {
-  const validStatuses = ['pendente', 'em progresso', 'concluída']
+  const validStatuses = ['pendente', 'em progresso', 'concluida']
   return (
     body &&
     typeof body.title === 'string' &&
